@@ -1,0 +1,245 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.rs.slideshow.min.js"></script>
+        
+        <script type="text/javascript" src="codemirror-2-32/lib/codemirror.js"></script>
+        <script type="text/javascript" src="codemirror-2-32/lib/util/simple-hint.js"></script>
+        <link rel="stylesheet" href="codemirror-2-32/lib/util/simple-hint.css"/>
+        <script type="text/javascript" src="codemirror-2-32/lib/util/javascript-hint.js"></script>
+        <link rel="stylesheet" href="codemirror-2-32/lib/codemirror.css"/>
+        <script type="text/javascript" src="codemirror-2-32/mode/javascript/javascript.js"></script>
+        <script type="text/javascript" src="codemirror-2-32/mode/php/php.js"></script>
+        <script type="text/javascript" src="codemirror-2-32/mode/xml/xml.js"></script>
+        <script type="text/javascript" src="codemirror-2-32/mode/css/css.js"></script>
+        <script type="text/javascript" src="codemirror-2-32/mode/clike/clike.js"></script>
+
+        <script type="text/javascript" src="codemirror-2-32/mode/htmlmixed/htmlmixed.js"></script>
+        <link rel="stylesheet" href="codemirror-2-32/doc/docs.css"/>
+        <script type="text/javascript" src="js/s.js"></script>
+        
+        <title>eZ Publish CRUD Module Scaffold</title>
+        <meta name="Keywords" content="eZ Publish, php, mysql, crud, scaffold, admin generator, bakery" />
+        <meta name="Description" content="Fast PHP eZ Publish CRUD Scaffold Gerator" />
+        <link href="style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+        <!--<div id="logo"></div>-->
+        <h1>
+            eZ <span class="color">Scaffold</span>
+        </h1>
+
+        <div {% if show_form %}{% else %}id="col1"{% endif %}>
+            {% if show_form %}
+            <div class="buttons">
+                <!--<a href="javascript:showNew();">Enter New Table</a> | -->
+                <a id="showAll" href="#" >Show/Hide All</a>
+            </div>
+            {% else %}
+            {% endif %}
+
+            <div class="container">
+                {% if message != '' %}
+                <div class=message>{{ message }}</div>
+                {% endif %}
+
+                <div {% if show_form %}style="display:none"{% endif %} id="new_table">
+                    <form action="" method="post">
+                        <p>
+                            Welcome to eZ Publish Scaffold, where you can <span class="style1">quickly generate your CRUD pages in a module for an eZ Publish</span> instance based on a MySQL database <span class="style1">for FREE</span>.
+                        </p>
+
+                        <p>
+                            Like an admin generator in Symfony or a Bakery in CakePHP, it will allow you to generate an extension and its module in order to allow you to get Create/Read/Update/Delete access on a MySQL table in <b>less than 5 minutes</b>
+                        </p>
+                        <p>
+                            The idea is to allow you to keep the control of 100% of the generated code. Once generated you will be able to modify it at your convenience.
+                        </p>
+                        <ul>
+                            <li>Generate Create/Read/Update/Delete forms allowing to interact with the given MySQL table</li>
+                            <li>Generate validation according to MySQL table parameters</li>
+                            <li>Generate pagination</li>
+                            <li>Support only one primary key per table</li>
+                            <li>Support only varchar/int/text MySQL types for the validation (other types will be considered as simple string)</li>
+                        </ul>
+
+                        <h2>
+                            Scaffolder
+                        </h2>
+                        <p>
+                            Enter your phpMyAdmin MySQL table export below to generate your pages (one table at a time). <a id="hint_button" href="javascript:;">[click me for a Hint]</a>
+                        </p>
+
+                        <div id="sql_hint" style="display:none;">
+                            <div id="sql_hint2" >
+                                Paste your phpMyAdmin export MySQL queries for the table your which to generate list, edit, new, and delete pages in the box below. A sample text maybe:
+                                <textarea readonly="readonly" name="hint" id="hint" cols="80" rows="10">
+-- 
+-- Table structure for table `users_test`
+-- 
+
+CREATE TABLE IF NOT EXISTS `users_test` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `firstname` varchar(30) COLLATE utf8_general_ci NOT NULL,
+  `lastname` varchar(45) COLLATE utf8_general_ci NOT NULL,
+  `gender` tinyint(1) NOT NULL,
+  `email` varchar(100) COLLATE utf8_general_ci NOT NULL,
+  `password` varchar(64) COLLATE utf8_general_ci NOT NULL,
+  `display_name` varchar(30) COLLATE utf8_general_ci NOT NULL,
+  `created_on` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `email` (`email`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci AUTO_INCREMENT=5 ;  
+                                </textarea>
+                            </div>
+                        </div>
+                        <textarea name="sql" id="sql" cols="80" rows="10">{% if request_sql is defined %}{{ request_sql|e }}{% endif %}</textarea>
+
+
+                        <p>
+                            eZ Publish Extension Name<br /> 
+                            <input name="extension" type="text" id="extension" value="{% if request_extension is not null %}{{ request_extension|e }}{% else %}my_ext{% endif %}" />
+                        </p>
+
+                        <p>
+                            List action name<br /> 
+                            <input type="text" name="list_page" value="{% if request_list_page is not null %}{{ request_list_page|e }}{% else %}list{% endif %}" id="list_page" />
+                        </p>
+
+                        <p>New action name<br /> 
+                            <input type="text" name="new_page" value="{% if request_new_page is not null %}{{ request_new_page|e }}{% else %}new{% endif %}" id="new_page" />
+                        </p>
+
+                        <p>Edit action name<br />
+                            <input type="text" name="edit_page" value="{% if request_edit_page is not null %}{{ request_edit_page|e }}{% else %}edit{% endif %}" id="edit_page" />
+                        </p>
+
+                        <p>Delete action name<br />
+                            <input type="text" name="delete_page" value="{% if request_delete_page is not null %}{{ request_delete_page|e }}{% else %}delete{% endif %}" id="delete_page" />
+                        </p> 
+
+                        <input name="scaffold_info" type="hidden" value="1" />
+                        <input id="buildbtn" class="blue button" type="submit" value="Build my module now" />
+                
+                    </form>
+                
+ 
+                    <h2>
+                        Still not convinced ? Look at our Demo
+                    </h2>
+                    <div id="slideshow-div" class="rs-slideshow">
+                        <!--
+                        Set up an initial slide -- this provides an image for users without JavaScript
+                        -->
+                        <div class="slide-container">
+                            <img src="doc/demo_list.png"
+                                alt="Generated paginated list (index.php/users_test/list/3/10)" title="Generated paginated list (index.php/users_test/list/3/10)" />
+                            <span class="slide-caption">Generated paginated list (index.php/users_test/list/3/10)</span>
+                        </div>
+
+                        <!--
+                        This list contains data about each slide.
+                        So that the slide images aren't loaded with the page, we use <a> tags.
+                        With some extra CSS rules, this allows for users without JavaScript to
+                        access the images by clicking the links.
+                        -->
+                        <ol class="slides">
+                            <li>
+                                <a href="doc/demo_edit.png" title="Generated edit form (index.php/users_test/edit/78)">Generated edit form (index.php/users_test/edit/78)</a>
+                            </li>
+                            <li>
+                                <a href="doc/demo_add.png" title="Generated add form (index.php/users_test/new)">Generated add form (index.php/users_test/new)</a>
+                            </li>
+                            <li>
+                                <a href="doc/demo_list.png" title="Generated paginated list (index.php/users_test/list/3/10)">Generated paginated list (index.php/users_test/list/3/10)</a>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            {% if show_form %}
+            <p>
+                You can see bellow some of the generated classes. Please click on the link to download all generated files.
+            </p>
+            <p>
+                You can edit your code directly in this page and then copy past it wherever you want. However for security purpose, these modifications won't be available in the downloaded generated files.
+            </p>
+            <h2>Classes</h2>
+            <div id="classes">
+                {% include 'includes/textarea.html' with {'title': 'DbManager Class', 'content': generateClassDbManager, 'class': 'classes_dbmanager', 'type': 'text/x-php'} %}
+                {% include 'includes/textarea.html' with {'title': 'Generic Table Class', 'content': generateClassGenericTable, 'class': 'classes_base', 'type': 'text/x-php'} %}
+                {% include 'includes/textarea.html' with {'title': 'Table Class', 'content': generateClassTable, 'class': 'classes_table', 'type': 'text/x-php'} %}
+            </div>    
+
+            
+            <h2>List</h2>
+            <div id="list">
+                {% include 'includes/textarea.html' with {'title': 'Controller', 'content': generateListTableCtrl, 'class': 'list_ctrl', 'type': 'text/x-php'} %}
+                {% include 'includes/textarea.html' with {'title': 'Design', 'content': generateListTableDesign, 'class': 'list_design', 'type': 'text/html'} %}
+            </div>
+
+            <h2>New</h2>
+            <div id="new">
+                {% include 'includes/textarea.html' with {'title': 'Controller', 'content': generateNewrowCtrl, 'class': 'new_ctrl', 'type': 'text/x-php'} %}
+                {% include 'includes/textarea.html' with {'title': 'Design', 'content': generateNewrowDesign, 'class': 'new_design', 'type': 'text/html'} %}
+            </div>
+
+
+            
+            <h2>Edit</h2>
+            <div id="edit">
+                {% include 'includes/textarea.html' with {'title': 'Controller', 'content': generateEditrowCtrl, 'class': 'edit_ctrl', 'type': 'text/x-php'} %}
+                {% include 'includes/textarea.html' with {'title': 'Design', 'content': generateEditrowDesign, 'class': 'edit_design', 'type': 'text/html'} %}
+            </div>
+
+            <h2>Delete</h2>
+            <div id="delete">
+                {% include 'includes/textarea.html' with {'title': 'Controller', 'content': generateDeleterowCtrl, 'class': 'delete_ctrl', 'type': 'text/x-php'} %}
+                {% include 'includes/textarea.html' with {'title': 'Design', 'content': generateDeleterowDesign, 'class': 'delete_design', 'type': 'text/html'} %}
+            </div>
+
+            {% endif %}
+        </div>
+        {% if show_form %}
+        {% else %}
+        <div id="col2">
+             <div class="figure">
+                <p>
+                    <img src="doc/arbo.png" alt="Generated Arbo" title="Generated Arbo"/>
+                </p>
+                <p>
+                    At the end of the process here is what you can expect to be generated by eZ Scaffold
+                </p>
+            </div>
+            <div class="figure">
+                <p>
+                    <img src="doc/ClassDiagram.png" alt="Generated ClassDiagram" title="Generated ClassDiagram"/>
+                </p>
+                <p>
+                    All the generated code will follow this UML implementation with the class UsersTable replaced by a class reflecting your table properties
+                </p>
+            </div>
+            <div class="clear"></div>
+        </div>
+        {% endif %}
+        <div class="clear"></div>
+        <p>
+            Based on uprz23 &lt; the at sign &gt; gmail.com idea: <span class="style1">phpscaffold.com</span>.
+        </p>
+        <p>
+            If you have any question, you can contact me at guillaume.morel &lt; the at sign &gt; gmx.com.
+        </p>
+
+        {% if show_form %}
+        <script type="text/javascript">
+            CodeMirror.commands.autocomplete = function(cm) {
+                CodeMirror.simpleHint(cm, CodeMirror.javascriptHint);
+            } 
+        </script>
+        {% endif %}
+    </body>
+</html>

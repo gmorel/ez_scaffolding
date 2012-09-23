@@ -1,0 +1,39 @@
+<?php 
+
+/**
+* Methods to access db table
+*/
+class Service_Database_Base
+{
+
+    /**
+    * Retrieve Ezc database import instance.
+    * @return ezcDbHandler
+    */
+    protected function _getEzcDbInstance() {
+        return Service_Database_DbManager::getInstance()->getEzcDbInstance();
+    }
+
+    /**
+    * Retrieve results following query result.
+    * @param ezcQuerySelect $q Query selector.
+    * @return array
+    */
+    protected function _getDbQueryResults(ezcQuerySelect $q) {
+        $stmt = $q->prepare();
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+    * Retrieve first result following query result.
+    * @param ezcQuerySelect $q Query selector.
+    * @return array
+    */
+    protected function _getDbQuerySingleResult(ezcQuerySelect $q) {
+        $stmt = $q->prepare();
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+}
+?>

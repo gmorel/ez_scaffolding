@@ -1,0 +1,338 @@
+body {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 14px; 
+    color : #A0A09B;
+    margin: 0 0 20px 0; 
+    max-width: 74.3em;
+}
+
+.container {
+    width: 650px;
+    padding: 0 10px ;
+}
+
+.options {
+    float: right;
+    margin: 10px 0 0 0;
+}
+
+.textarea {
+    background: #eee;
+    border: 1px dashed #aaa;
+    padding: 5px;
+    color:  #CC0000;
+    width: 650px;
+    height: 400px;
+    margin: 0 0 20px 0;
+}
+
+h1 {
+    background: #59C1ED;
+    margin: 0;
+    padding: 10px 10px ;
+    color: #fff;
+    font-size: 26px;
+    width: 100%;
+    float: left;
+    margin-top: 10px;
+    cursor:pointer;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+}
+
+#logo {
+
+    width:111px;
+    height:111px;
+    left:0px;
+}
+
+.submenu {
+    background: #222;
+    color: white;
+    padding: 5px 10px ;
+    margin: 0 0 20px 0;
+}
+
+.submenu a {
+    color: white;
+    text-decoration: none;
+}
+
+.color {
+    color: #FFF;
+    font-weight: bold;
+}
+
+h2 {
+    padding: 0;
+    font-weight: normal;
+    font-size: 22px;
+    margin: 0 0 5px 0;
+}
+
+#new_table {
+    margin: 0 0 30px 0;
+}
+
+#new_table textarea {
+    background: #eee;
+    border: 1px dashed #aaa;
+    padding: 5px;
+    color: #59C1ED;
+    width: 638px;
+    height: 400px;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+}
+
+#new_table input[type='text'] {
+    background: #eee;
+    border: 1px dashed #aaa;
+    color: #59C1ED;
+    width: 150px;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.message {
+    color: red;
+}	
+.style1 {
+    color: #59C1ED;
+    font-weight: bold;
+}
+
+#col1{
+    float: left;
+    width: 550px;
+}
+#col2{
+    float: right;
+    width: 200px;
+}
+#col2 img{
+    float: left;
+}
+
+.clear {
+    clear: both;
+}
+
+pre {
+    white-space: pre-wrap;       /* css-3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+div.figure {
+    float: right;
+    margin: 0.5em;
+    padding: 0.5em;
+}
+div.figure p {
+    text-align: center;
+    font-style: italic;
+    font-size: smaller;
+    text-indent: 0;
+    word-wrap: break-word;
+}
+
+.CodeMirror {
+    width: 100%;
+}
+
+#sql_hint textarea {
+    color: #888;
+    width: 630px;
+    height: 240px;
+}
+
+#sql_hint2 {
+    background: #59C1ED; 
+    color:#FFFFFF; 
+    padding: 5px; 
+    margin: 10px 0;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+}
+
+.options a, .buttons a {
+    color: #59C1ED;
+}
+
+.CodeMirror {
+    border: 1px solid #eee;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+} 
+.CodeMirror-scroll { 
+    height: 100% 
+}
+
+input.blue {
+    background: -moz-linear-gradient(center top , #00ADEE, #0078A5) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, left top, left bottom, from(#00ADEE), to(#0078A5));
+    border: 1px solid #0076A3;
+    color: #D9EEF7;
+}
+input.blue:hover {
+	background: #007ead;
+	background: -webkit-gradient(linear, left top, left bottom, from(#0095cc), to(#00678e));
+	background: -moz-linear-gradient(top,  #0095cc,  #00678e);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#0095cc', endColorstr='#00678e');
+}
+input.blue:active {
+	color: #80bed6;
+	background: -webkit-gradient(linear, left top, left bottom, from(#0078a5), to(#00adee));
+	background: -moz-linear-gradient(top,  #0078a5,  #00adee);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#0078a5', endColorstr='#00adee');
+}
+
+input.button {
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    display: inline-block;
+    font: 14px/100% Arial,Helvetica,sans-serif;
+    margin: 0 2px;
+    outline: medium none;
+    padding: 0.5em 2em 0.55em;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    vertical-align: baseline;
+}
+input.button:hover {
+	text-decoration: none;
+}
+input.button:active {
+	position: relative;
+	top: 1px;
+}
+
+
+
+
+
+.rs-slideshow {
+    border: 3px solid #59C1ED;
+    height: 436px;
+    margin: 24px auto;
+    overflow: hidden;
+    position: relative;
+    width: 720px;
+    border-radius: 0.5em 0.5em 0.5em 0.5em;
+}
+ 
+.rs-slideshow .slide-container {
+    background-color: #444;
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+ 
+.rs-slideshow .slide-container img {
+    position: absolute;
+}
+ 
+/*    Hide the slide data container    */
+.rs-slideshow .slides {
+    display: none;
+}
+
+.slide-container .slide-caption {
+    background-color: #000;
+    bottom: 0;
+    color: #fff;
+    display: block;
+    left: 0;
+    padding: 6px 12px;
+    position: absolute;
+    text-align: center;
+    right: 0;
+    filter: alpha(opacity=70);
+    -khtml-opacity: 0.7;
+    -moz-opacity: 0.7;
+    opacity: 0.7;
+}
+
+
+/**
+*	These styles make the list of links to slide images visible to users
+*	who don't have JavaScript enabled. By adding the 'no-js' class to 
+*	the HTML element, and using Modernizr to remove this class for JS
+*	users, we can style for both scenarios.
+*	http://www.modernizr.com/
+*/
+
+.no-js .rs-slideshow {
+	height: auto;
+}
+.no-js .rs-slideshow .slide-container, 
+.no-js .rs-slideshow .slide-container img {
+	position: relative;
+}
+.no-js .rs-slideshow .slides {
+	display: block;
+	margin: 24px 48px;
+}
+.no-js .rs-slideshow .slides li {
+	margin: 0;
+}
+
+
+
+/**
+*	The following styles are used in the demos with slideshow controls, 
+*	such as play/pause and prev/next buttons.
+*/
+
+.rs-controls {
+	clear: both;
+	margin: 12px auto;
+	width: 620px;
+}
+.rs-play-pause, .rs-prev, .rs-next {
+	float: left;
+	margin-right: 12px;
+}
+.rs-controls ul {
+	float: left;
+	list-style: none;
+	margin: 0 6px 0 0;
+	padding: 0;
+	width: auto;
+}
+.rs-index-list li {
+	float: left;
+	margin-right: 6px;
+}
+.rs-controls a {
+	background-color: #FFF;
+	border: 1px solid #59C1ED;
+        
+	border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	-khtml-border-radius: 0.5em;
+	color: #59C1ED;
+	display: block;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	line-height: 1.1em;
+	padding: 3px 5px;
+	text-decoration: none;
+}
+.rs-controls a:hover {
+	background-color: rgb(200,200,200);
+	color: #444;
+}
+.rs-controls a.rs-active {
+	background-color: #59C1ED;
+	border: 1px solid #59C1ED;
+	color: #FFF;
+}

@@ -1,0 +1,42 @@
+<h4>{'{{ class_name }} content'|i18n("design/{{ extension_name }}/{{ table_name }}")}</h4>
+<div id="table">
+    <table>
+        <thead>
+            <tr>
+{% for header in headers %}
+                <td>{{ header|e }}</td>
+{% endfor %}
+            </tr>
+        </thead>
+
+        {def $i=1}
+        {foreach $elements as $row}
+        <tr class="{if eq($i,1)}alternate"{set $i=0}{else}"{set $i=1}{/if}>
+            {foreach $row as $value}
+                <td>{$value|wash}</td>
+            {/foreach}
+            <td>
+                <a href="{% raw %}{"{% endraw %}{{ table_name }}/{{ edit_page }}{% raw %}"|ezurl('no','full')}{% endraw %}/{$row['{{ id_key }}']|wash}">
+                   {'Edit {{ class_name }}'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+                </a>
+            </td>
+            <td>
+                <a href="{% raw %}{"{% endraw %}{{ table_name }}/{{ delete_page }}{% raw %}"|ezurl('no','full')}{% endraw %}/{$row['{{ id_key }}']|wash}">
+                   {'Delete {{ class_name }}'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+                </a>
+            </td>
+        </tr>	
+        {/foreach}
+        {undef $i}
+    </table>
+
+    <div class="pagination">
+        {$display_items_per_page}
+        {$display_jump_menu}
+        {$display_pages}
+    </div>
+</div>
+
+<a href={% raw %}{{% endraw %}"{{ table_name }}/{{ new_page }}{% raw %}"|ezurl}{% endraw %}>
+   {'New {{ class_name }}'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+</a>

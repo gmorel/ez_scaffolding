@@ -1,0 +1,25 @@
+<h4>{'Edit a {{ class_name }}'|i18n("design/{{ extension_name }}/{{ table_name }}")}</h4>
+
+{if and(is_set($action), eq('done',$action))}
+<p class="success">
+    {'{{ class_name }} edited.'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+</p>
+{else}
+    {if $errors}
+        <ul id="errors">
+        {foreach $errors as $error}
+            <li>{$error|wash}</li>
+        {/foreach}
+        </ul>
+    {/if}
+{/if}
+<a href={% raw %}{{% endraw %}"{{ table_name }}/{{ list_page }}{% raw %}"|ezurl}{% endraw %}>
+    {'Back To Listing'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+</a>
+
+<form action="{% raw %}{{% endraw %}"{{ table_name }}/{{ edit_page }}"|ezurl('no','full'){% raw %}}{% endraw %}/{% raw %}{{% endraw %}${{ id_key }}{% raw %}}{% endraw %}" method='POST'>
+{{ inputs|raw }}
+    <input type="hidden" value="{% raw %}{{% endraw %}${{ id_key }}{% raw %}}{% endraw %}" name="{{ id_key }}" />
+    <input type="hidden" value="1" name="submitted" />
+    <input type="submit" value="{'Edit {{ class_name }}'|i18n("design/{{ extension_name }}/{{ table_name }}")}" />
+</form>

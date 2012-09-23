@@ -1,0 +1,223 @@
+<?php
+/*
+ * PHP Pagination Class optimized for eZ Publish Framework
+ * @author admin@catchmyfame.com - http://www.catchmyfame.com modified by guillaume.morel@gmx.com
+ * @version 3.0.0
+ * @date August 16, 2012
+ * @copyright (c) admin@catchmyfame.com (www.catchmyfame.com)
+ * @license CC Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0) - http://creativecommons.org/licenses/by-sa/3.0/
+ * SELECT id, name, address FROM table ORDER BY id ASC $pages->limit
+ * echo "<p class=\"paginate\">Page: $pages->current_page of $pages->num_pages</p>\n";
+ */
+class Service_Database_Paginator{
+    
+    /**
+     * Items displayed by default
+     */
+    CONST DEFAULT_ITEMS_PER_PAGE = 10;
+    
+    public $items_per_page;
+    public $low;
+    public $limit;
+    public $return;
+    public $default_ipp;
+    public $querystring;
+    public $num_pages;
+    protected $_items_total;
+    protected $_current_page;
+    protected $_mid_range;
+    protected $_ipp_array;
+    protected $_base_url;
+
+    /**
+     * Constructor 
+     * @param string $base_url base url for all links
+     * @param int $items_total total nb item
+     * @param int $current_page current page
+     * @param int $mid_range allow to display '...' when there are too many page and display them afer $mid_range generated links
+     * @param int $item_per_page item to display per page
+     */
+    public function __construct($base_url, $items_total, $current_page = 1, $mid_range = 5, $item_per_page = null)
+    {
+        $this->_items_total = $items_total;
+        $this->_base_url = $base_url;
+        $this->_current_page = $current_page;
+        $this->_mid_range = $mid_range;
+        $this->_ipp_array = array(10,25,50,100,'All');
+        if(!isset($item_per_page))
+        {
+            $this->items_per_page = self::DEFAULT_ITEMS_PER_PAGE;
+        }else
+        {
+            $this->items_per_page = $item_per_page;
+        }
+    }
+
+    /**
+     * Generate the pagination with the given parameters 
+     */
+    public function paginate()
+    {
+        if(!isset($this->default_ipp)) 
+        {
+            $this->default_ipp=self::DEFAULT_ITEMS_PER_PAGE;
+        }
+        if(isset($this->items_per_page) && $this->items_per_page == 'All')
+        {
+            $this->num_pages = 1;
+        }
+        else
+        {
+            if(!is_numeric($this->items_per_page) OR $this->items_per_page <= 0) $this->items_per_page = $this->default_ipp;
+            $this->num_pages = ceil($this->_items_total/$this->items_per_page);
+        }
+
+        $prev_page = $this->_current_page-1;
+        $next_page = $this->_current_page+1;
+        
+        if($_GET)
+        {
+            $args = explode("&",$_SERVER['QUERY_STRING']);
+            foreach($args as $arg)
+            {
+                $keyval = explode("=",$arg);
+                if($keyval[0] != "page") 
+                {
+                    if(!isset($this->querystring))
+                    {
+                        $this->querystring = '?';
+                    }
+                    $this->querystring .= "&" . $arg;
+                }
+            }
+        }
+
+        if($_POST)
+        {
+            foreach($_POST as $key=>$val)
+            {
+                if($key != "page")
+                {
+                    if(!isset($this->querystring))
+                    {
+                        $this->querystring = '?';
+                    }
+                    $this->querystring .= "&$key=$val";
+                }
+            }
+        }
+        if($this->num_pages > 10)
+        {
+            $this->return = ($this->_current_page > 1 And $this->_items_total >= 10) ? "<a class=\"paginate\" href=\"$this->_base_url/$prev_page/$this->items_per_page$this->querystring\">\n" . ezpI18n::tr( "design/{{ extension_name }}/pagination", '&laquo; Previous') . "\n</a> ":"<span class=\"inactive\" href=\"#\">\n" . ezpI18n::tr( "design/{{ extension_name }}/pagination", '&laquo; Previous') . "\n</span> ";
+
+            $this->start_range = $this->_current_page - floor($this->_mid_range/2);
+            $this->end_range = $this->_current_page + floor($this->_mid_range/2);
+
+            if($this->start_range <= 0)
+            {
+                $this->end_range += abs($this->start_range)+1;
+                $this->start_range = 1;
+            }
+            if($this->end_range > $this->num_pages)
+            {
+                $this->start_range -= $this->end_range-$this->num_pages;
+                $this->end_range = $this->num_pages;
+            }
+            $this->range = range($this->start_range,$this->end_range);
+
+            for($i=1;$i<=$this->num_pages;$i++)
+            {
+                if($this->range[0] > 2 And $i == $this->range[0]) $this->return .= " ... ";
+                // loop through all pages. if first, last, or in range, display
+                if($i==1 Or $i==$this->num_pages Or in_array($i,$this->range))
+                {
+                        $this->return .= ($i == $this->_current_page And $this->items_per_page != 'All') ? "<a title=\"" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'Go to page %i% of %num_pages%', null, array('%i%' => $i, '%num_pages%' => $this->num_pages)) . "\" class=\"current\" href=\"#\">$i</a> ":"<a class=\"paginate\" title=\"" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'Go to page %i% of %num_pages%', null, array('%i%' => $i, '%num_pages%' => $this->num_pages)) . "\" href=\"$this->_base_url/$i/$this->items_per_page$this->querystring\">$i</a> ";
+                }
+                if($this->range[$this->_mid_range-1] < $this->num_pages-1 And $i == $this->range[$this->_mid_range-1]) $this->return .= " ... ";
+            }
+            $this->return .= (($this->_current_page < $this->num_pages And $this->_items_total >= 10) And ($this->items_per_page != 'All') And $this->_current_page > 0) ? "<a class=\"paginate\" href=\"$this->_base_url/$next_page/$this->items_per_page$this->querystring\">" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'Next &raquo;') . "</a>\n":"<span class=\"inactive\" href=\"#\">" . ezpI18n::tr( "design/{{ extension_name }}/pagination", '&raquo; Next') . "</span>\n";
+            $this->return .= ($this->items_per_page == 'All') ? "<a class=\"current\" style=\"margin-left:10px\" href=\"#\">\n" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'All') . "\n</a> \n":"<a class=\"paginate\" style=\"margin-left:10px\" href=\"$this->_base_url/1/All$this->querystring\">\n" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'All') . "\n</a> \n";
+        }
+        else
+        {
+            for($i=1;$i<=$this->num_pages;$i++)
+            {
+                $this->return .= ($i == $this->_current_page) ? "<a class=\"current\" href=\"#\">\n$i\n</a> ":"<a class=\"paginate\" href=\"$this->_base_url/$i/$this->items_per_page$this->querystring\">\n$i\n</a> ";
+            }
+            $this->return .= "<a class=\"paginate\" href=\"$this->_base_url/1/All$this->querystring\">\n" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'All') . "\n</a> \n";
+        }
+        $this->low = ($this->_current_page <= 0) ? 0:($this->_current_page-1) * $this->items_per_page;
+        if($this->_current_page <= 0) $this->items_per_page = 0;
+        $this->limit = (isset($this->items_per_page) && $this->items_per_page == 'All') ? "":" LIMIT $this->low,$this->items_per_page";
+    }
+    
+    /**
+     * Display Items per page select button
+     * exemple :
+     * <span class="paginate">
+     *      Items per page:
+     * </span>
+     * <select onchange="window.location='/ezpublish-4.4.0/index.php/users_test/list/1/'+this[this.selectedIndex].value+'';return false" class="paginate">
+     *      <option selected="selected" value="10">10</option>
+     *      <option value="25">25</option>
+     *      <option value="50">50</option>
+     *      <option value="100">100</option>
+     *      <option value="All">All</option>
+     * </select>
+     * @return string html 
+     */
+    public function display_items_per_page()
+    {
+        $items = '';
+        foreach($this->_ipp_array as $ipp_opt) 
+        {
+            $items .= ($ipp_opt == $this->items_per_page) ? "<option value=\"$ipp_opt\" selected=\"selected\">$ipp_opt</option>\n":"<option value=\"$ipp_opt\">$ipp_opt</option>\n";
+        }
+            
+        return "<span class=\"paginate\">\n" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'Items per page:') . "\n</span>\n<select class=\"paginate\" onchange=\"window.location='$this->_base_url/1/'+this[this.selectedIndex].value+'$this->querystring';return false\">\n$items\n</select>\n";
+    }
+    
+    /**
+     * Display jump menu select button
+     * exemple :
+     * <span class="paginate">
+     *      Page:
+     * </span>
+     * <select onchange="window.location='/ezpublish-4.4.0/index.php/users_test/list/'+this[this.selectedIndex].value+'/10';return false" class="paginate">
+     *      <option value="1">1</option>
+     *      <option value="2">2</option>
+     *      <option value="3">3</option>
+     *      <option selected="selected" value="4">4</option>
+     * </select>
+     * @return string html  
+     */
+    public function display_jump_menu()
+    {
+        $option = '';
+        for($i=1;$i<=$this->num_pages;$i++)
+        {
+            $option .= ($i==$this->_current_page) ? "<option value=\"$i\" selected=\"selected\">$i</option>\n":"<option value=\"$i\">$i</option>\n";
+        }
+        
+        return "<span class=\"paginate\">\n" . ezpI18n::tr( "design/{{ extension_name }}/pagination", 'Page:') . "\n</span>\n<select class=\"paginate\" onchange=\"window.location='$this->_base_url/'+this[this.selectedIndex].value+'/$this->items_per_page$this->querystring';return false\">\n$option\n</select>\n";
+    }
+    
+    /**
+     * Display page menu <a> links
+     * exemple :
+     * <a class="paginate" href="/ezpublish-4.4.0/index.php/users_test/list/1/10"> 1 </a>
+     * <a class="paginate" href="/ezpublish-4.4.0/index.php/users_test/list/2/10"> 2 </a>
+     * <a class="paginate" href="/ezpublish-4.4.0/index.php/users_test/list/3/10"> 3 </a>
+     * <a class="current" href="#"> 4 </a>
+     * <a class="paginate" href="/ezpublish-4.4.0/index.php/users_test/list/1/All"> All </a>
+     * @return string html  
+     */
+    public function display_pages()
+    {
+        if($this->items_per_page == 'All' || $this->_items_total < $this->items_per_page)
+        {
+            return '';
+        }
+        return $this->return;
+    }
+}

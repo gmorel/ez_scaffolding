@@ -1,0 +1,77 @@
+<?php
+
+class Service_Database_DbManager {
+
+    CONST SITE_INI_GROUP = 'DatabaseSettings';
+    CONST SITE_INI_HOST_KEY = 'Server';
+    CONST SITE_INI_DATABASE_KEY = 'Database';
+    CONST SITE_INI_USER_KEY = 'User';
+    CONST SITE_INI_PASSWORD_KEY = 'Password';
+    CONST SITE_INI_DEFAULT_DRIVER = 'default';
+
+    /**
+     * Current instance.
+     * @var Service_Database_DbManager
+     */
+    protected static $_instance = null;
+
+    /**
+     * Database settings configurations.
+     * @var array
+     */
+    protected static $_settings = array();
+
+    /**
+     * Use singleton to improve performance and database connections.
+     */
+    protected function __construct() {
+        $ini = eZINI::instance('site.ini');
+        self::$_settings[self::SITE_INI_DEFAULT_DRIVER][self::SITE_INI_HOST_KEY] = $ini->variable(self::SITE_INI_GROUP, self::SITE_INI_HOST_KEY);
+        self::$_settings[self::SITE_INI_DEFAULT_DRIVER][self::SITE_INI_DATABASE_KEY] = $ini->variable(self::SITE_INI_GROUP, self::SITE_INI_DATABASE_KEY);
+        self::$_settings[self::SITE_INI_DEFAULT_DRIVER][self::SITE_INI_USER_KEY] = $ini->variable(self::SITE_INI_GROUP, self::SITE_INI_USER_KEY);
+        self::$_settings[self::SITE_INI_DEFAULT_DRIVER][self::SITE_INI_PASSWORD_KEY] = $ini->variable(self::SITE_INI_GROUP, self::SITE_INI_PASSWORD_KEY);
+    }
+
+    /**
+     * Build mysql request following driver.
+     * @param string $driver Driver usefull to retriever connection informations.
+     * @return string
+     */
+    protected function _buildMysqlConnectionStringFollowingDriver($driver) {
+        $driverDatas = self::$_settings[$driver];
+
+        return 'mysql://' . $driverDatas[self::SITE_INI_USER_KEY] . ':' .
+                $driverDatas[self::SITE_INI_PASSWORD_KEY] . '@' .
+                $driverDatas[self::SITE_INI_HOST_KEY] . '/' .
+                $driverDatas[self::SITE_INI_DATABASE_KEY];
+    }
+
+    /**
+     * Retrieve current connect instance.
+     * @return Service_Database_DbManager
+     */
+    public static function getInstance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self();
+        }
+
+        return self::$_instance;
+    }
+
+    /**
+     * Return ezc db instance following driver.
+     * @param string $driver Driver to select.
+     * @return ezcDbHandler
+     */
+    public function getEzcDbInstance($driver = self::SITE_INI_DEFAULT_DRIVER) {
+        if ($driver == self::SITE_INI_DEFAULT_DRIVER) {
+            $mysql_string = $this->_buildMysqlConnectionStringFollowingDriver($driver);
+        }
+
+        $db = ezcDbFactory::create($mysql_string);
+        $db->query("SET NAMES utf8");
+        ezcDbInstance::set($db);
+        return ezcDbInstance::get();
+    }
+
+}

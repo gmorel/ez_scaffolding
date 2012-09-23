@@ -1,0 +1,8 @@
+<h4>{'Delete a {{ class_name }}'|i18n("design/{{ extension_name }}/{{ table_name }}")}</h4>
+
+{if is_set($action)}
+    {'{{ class_name }} deleted.'|i18n("design/{{ extension_name }}/{{ table_name }}")}<br/>
+{/if}
+<a href={% raw %}{{% endraw %}"{{ table_name }}/{{ list_page }}{% raw %}"|ezurl}{% endraw %}>
+    {'Back To Listing'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+</a>

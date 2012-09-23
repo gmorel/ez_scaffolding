@@ -1,0 +1,23 @@
+<div class="title">
+    <div class="options">
+        <a class="toggle" href="#" onclick="$('#{{ class }}_container').toggle('slow'); return false;">Show/Hide</a> | 
+        <a href="download.php">Download All Files</a>
+    </div>
+    <h3>{{ title }}</h3>
+</div>
+<div id="{{ class }}_container" class="togglable">
+    <textarea readonly="readonly" name="{{ class }}" id="{{ class }}" cols="80" rows="10">{{ content }}</textarea>
+</div>
+<script type="text/javascript">
+    var editor_{{ class }} = CodeMirror.fromTextArea(document.getElementById("{{ class }}"), {
+        lineNumbers: true,
+        extraKeys: {"Ctrl-Space": "autocomplete"},
+        matchBrackets: true,
+        mode: "{{ type }}",
+        indentUnit: 4,
+        indentWithTabs: true,
+        enterMode: "keep",
+        tabMode: "shift"
+    });
+</script>
+<div class="clear"></div>

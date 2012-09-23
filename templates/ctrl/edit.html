@@ -1,0 +1,66 @@
+<?php
+
+// Init
+include_once( 'kernel/common/template.php' );
+$http = eZHTTPTool::instance();
+$Module = $Params['Module'];
+$tpl = eZTemplate::factory();
+$Result = array();
+
+//Get data
+${{ real_class_name }} = new {{ real_class_name }}();
+$column_array = array();
+
+// If data send
+if (isset($_POST['submitted'])) {
+    //Setup Validations
+    $validator = new FormValidator();
+
+{% for key, value in column_array %}
+{% if table[value]['required'] %}
+    $validator->addValidation("{{ value|e }}", "req", ezpI18n::tr( "design/{{ extension_name }}/validator", 'The field "%field%" is mandatory.', null, array('%field%' => '{{ value|e }}')));
+{% endif %}
+{% if table[value]['type'] == 'int' %}
+    $validator->addValidation("{{ value|e }}", "numeric", ezpI18n::tr( "design/{{ extension_name }}/validator", 'The field "%field%" should be numeric.', null, array('%field%' => '{{ value|e }}')));
+{% endif %}
+{% if table[value]['size'] %}
+    $validator->addValidation("{{ value|e }}", "maxlen={{ table[value]['size'] }}", ezpI18n::tr( "design/{{ extension_name }}/validator", 'The field "%field%" contains too many characters (%size% maximum).', null, array('%field%' => '{{ value|e }}', '%size%' => '{{ table[value]['size'] }}')));    
+{% endif %}
+{% if value|e == 'email' %}
+    $validator->addValidation("{{ value|e }}", "email", ezpI18n::tr( "design/{{ extension_name }}/validator", 'The field "%field%" should be a valid email value.', null, array('%field%' => '{{ value|e }}')));
+{% endif %}
+    $tpl->setVariable('{{ value|e }}', $_POST['{{ value|e }}']);
+    $column_array['{{ value|e }}'] = $_POST['{{ value|e }}'];
+    ${{ value|e }} = $_POST['{{ value|e }}'];
+    
+{% endfor %}
+    
+    //Now, validate the form
+    if($validator->ValidateForm()) // Success
+    {
+        ${{ real_class_name }}->update(${{ primary_key }}, {{ function_args }});
+        $tpl->setVariable('action','done');
+    }
+    else // Fail
+    {
+        $tpl->setVariable('action','fail');
+        $tpl->setVariable('errors',$validator->GetErrors());
+    }
+}else // Display data
+{
+    if (isset($Params['id']) && is_numeric($Params['id'])) {
+        $element = ${{ real_class_name }}->getById($Params['id']);
+
+{% for key, value in column_array %}
+        $tpl->setVariable('{{ value|e }}',$element['{{ value|e }}']);
+        $column_array['{{ value|e }}'] = $element['{{ value|e }}'];
+        
+{% endfor %}
+    }
+}
+
+// Fill in TPL
+$tpl->setVariable('column_array',$column_array);
+$Result['content'] = $tpl->fetch('design:{{ extension_name }}/{{ table_name }}/edit.tpl');
+
+?>

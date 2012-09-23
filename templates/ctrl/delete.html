@@ -1,0 +1,25 @@
+<?php
+
+// Init
+include_once( 'kernel/common/template.php' );
+$http = eZHTTPTool::instance();
+$Module = $Params['Module'];
+$tpl = eZTemplate::factory();
+$Result = array();
+
+//Get data
+${{ real_class_name }} = new {{ real_class_name }}();
+if (isset($Params['id'])) {
+    ${{ primary_key|e }} = (int) $Params['id'];
+
+    ${{ real_class_name }}->delete(${{ primary_key }});
+    $tpl->setVariable('action','done');
+}else
+{
+
+}
+
+// Fill in TPL
+$Result['content'] = $tpl->fetch('design:{{ extension_name }}/{{ table_name }}/delete.tpl');
+
+?>

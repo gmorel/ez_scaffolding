@@ -1,0 +1,73 @@
+<?php 
+
+/**
+ * Class to access {{ table_name }} table
+ */
+class Service_Database_{{ class_name }} extends Service_Database_Base
+{
+    CONST TABLE_NAME	= '{{ table_name }}';
+    
+    CONST PRIMARY_KEY_NAME = '{{ primary_key }}';
+
+    /**
+     * Select * from {{ table_name }}
+     * @param int $offset offset for pagination
+     * @param int $limit limit
+     * @return array
+     */
+    public function getAll($offset=null, $limit=null) {
+        $q = $this->_getEzcDbInstance()->createSelectQuery();
+        $q->select('{{ primary_key }}', '{{ columns|raw }}')
+            ->from(self::TABLE_NAME)  
+            ->orderBy('{{ primary_key }}', ezcQuerySelect::DESC);
+        if(is_numeric($offset) && is_numeric($limit))
+        {
+            $q->limit($limit, $offset);
+        }
+        return $this->_getDbQueryResults($q);
+    }
+    
+    /**
+     * Select by id from {{ table_name }}
+     * @param int ${{ primary_key }} primary key
+     * @return array
+     */
+    public function getById(${{ primary_key }}) {
+        $q = $this->_getEzcDbInstance()->createSelectQuery();
+        $q->select('{{ primary_key }}', '{{ columns|raw }}')
+            ->from(self::TABLE_NAME)
+            ->where($q->expr->eq('{{ primary_key }}', $q->bindValue(${{ primary_key }})));
+        return $this->_getDbQuerySingleResult($q);
+    }
+
+    {{ insertMethod|raw }}
+
+    {{ updateMethod|raw }}
+ 
+    /**
+     * Delete row in the {{ table_name }} table
+     * @param int ${{ primary_key }} primary key
+     */
+    public function delete(${{ primary_key }}) {
+        $q = $this->_getEzcDbInstance()->createDeleteQuery();
+        $q->deleteFrom(self::TABLE_NAME);
+        $q->where($q->expr->eq('{{ primary_key }}', $q->bindValue(${{ primary_key }})));
+        $stmt = $q->prepare();
+        $stmt->execute();
+    }
+
+    /**
+     * Count rows in the {{ table_name }} table
+     * @return int nb rows
+     */
+    public function count() {
+        $q = $this->_getEzcDbInstance()->createSelectQuery();
+        $q->select('COUNT(*) as count')
+                ->from(self::TABLE_NAME);
+
+        $ret = $this->_getDbQuerySingleResult($q);
+        return $ret['count'];
+    }
+
+}
+?>

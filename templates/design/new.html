@@ -1,0 +1,24 @@
+<h4>{'Add a new {{ class_name }}'|i18n("design/{{ extension_name }}/{{ table_name }}")}</h4>
+
+{if and(is_set($action), eq('done',$action))}
+<p class="success">
+    {'{{ class_name }} added.'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+</p>
+{else}
+    {if and(is_set($errors), $errors)}
+        <ul id="errors">
+        {foreach $errors as $error}
+            <li>{$error|wash}</li>
+        {/foreach}
+        </ul>
+    {/if}
+{/if}
+<a href={% raw %}{{% endraw %}"{{ table_name }}/{{ list_page }}{% raw %}"|ezurl}{% endraw %}>
+    {'Back To Listing'|i18n("design/{{ extension_name }}/{{ table_name }}")}
+</a>
+
+<form action={% raw %}{{% endraw %}"{{ table_name }}/{{ new_page }}{% raw %}"|ezurl}{% endraw %} method='POST'>
+{{ inputs|raw }}
+    <input type='hidden' value='1' name='submitted' />
+    <input type='submit' value='Add Row' />
+</form>

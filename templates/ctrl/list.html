@@ -1,0 +1,48 @@
+<?php
+
+// Init
+include_once( 'kernel/common/template.php' );
+$http = eZHTTPTool::instance();
+$Module = $Params['Module'];
+$tpl = eZTemplate::factory();
+$Result = array();
+
+//Get data
+${{ real_class_name }} = new {{ real_class_name }}();
+if(isset($Params['page']))
+{
+    $offset = $Params['page'];
+}
+else
+{
+    $offset = 1;
+}
+if(isset($Params['ipp']))
+{
+    $item_per_page = $Params['ipp'];
+}
+else
+{
+    $item_per_page = Service_Database_Paginator::DEFAULT_ITEMS_PER_PAGE;
+}
+
+// Pagination
+eZURI::transformURI( $host);
+$base_url = $host . $Module->functionURI( 'list' );
+$totalitems = ${{ real_class_name }}->count();
+$Paginator = new Service_Database_Paginator($base_url, $totalitems, $offset, 3, $item_per_page);
+$Paginator->paginate();
+
+// Get elements
+$elements = ${{ real_class_name }}->getAll($Paginator->low,$Paginator->items_per_page);
+
+
+// Fill in TPL
+$tpl->setVariable('elements',$elements);
+$tpl->setVariable('display_items_per_page',$Paginator->display_items_per_page());
+$tpl->setVariable('display_jump_menu',$Paginator->display_jump_menu());
+$tpl->setVariable('display_pages',$Paginator->display_pages());
+
+$Result['content'] = $tpl->fetch('design:{{ extension_name }}/{{ table_name }}/list.tpl');
+
+?>

@@ -1,0 +1,28 @@
+<?php
+
+$Module = array('name' => '{{ table_name }}');
+$ViewList = array();
+
+
+$ViewList['{{ list_page }}'] = array(
+    'script' => '{{ list_page }}.php',
+    'params' => array( 'page', 'ipp' )
+);
+
+$ViewList['{{ edit_page }}'] = array(
+    'script' => '{{ edit_page }}.php',
+    'params' => array( 'id' )
+);
+
+
+$ViewList['{{ new_page }}'] = array(
+    'script' => '{{ new_page }}.php'
+);
+
+$ViewList['{{ delete_page }}'] = array(
+    'script' => '{{ delete_page }}.php',
+    'params' => array( 'id' )
+);
+
+
+?>

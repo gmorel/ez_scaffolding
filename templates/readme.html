@@ -1,0 +1,18 @@
+Don't forget to add on overide/site.ini.append.php :
+And to allow your users to access your module (in the admin panel section user access or via a policy list)
+[ExtensionSettings]
+. . .
+ActiveExtensions[]={{ extension_name }}
+
+
+
+and on your_site_access/site.ini.append.php :
+
+[DesignSettings]
+. . .
+AdditionalSiteDesignList[]={{ extension_name }}
+
+
+You can access to your scaffolded mudule via this url:
+{$your_project}/index.php/{{ table_name }}/{{ list_page }}/
+
